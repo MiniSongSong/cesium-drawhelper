@@ -46,11 +46,11 @@
 </head>
 <body onload="start()">
 
-    <div id="cesiumContainer"></div>
-    <div id="toolbar">
-    </div>
-    <div id="logging">
-    </div>
+<div id="cesiumContainer"></div>
+<div id="toolbar">
+</div>
+<div id="logging">
+</div>
 
 <script>
 
@@ -60,6 +60,15 @@
         // create the almighty cesium widget
         var cesiumWidget = new Cesium.CesiumWidget('cesiumContainer');
         var scene = cesiumWidget.scene;
+
+        // add terrain elevation
+        var cesiumTerrainProviderHeightmaps = new Cesium.CesiumTerrainProvider({
+            url : 'http://cesiumjs.org/smallterrain',
+            credit : 'Terrain data courtesy Analytical Graphics, Inc.'
+        });
+
+        scene.primitives.centralBody.terrainProvider = cesiumTerrainProviderHeightmaps;
+
         // start the draw helper to enable shape creation and editing
         var drawHelper = new DrawHelper(cesiumWidget);
         var toolbar = drawHelper.addToolbar(document.getElementById("toolbar"), {
@@ -106,7 +115,7 @@
         });
         toolbar.addListener('polygonCreated', function(event) {
             loggingMessage('Polygon created with ' + event.positions.length + ' points');
-            var polygon = new Cesium.Polygon({
+            var polygon = new DrawHelper.PolygonPrimitive({
                 positions: event.positions,
                 material : Cesium.Material.fromType('Checkerboard')
             });
@@ -133,7 +142,7 @@
         toolbar.addListener('extentCreated', function(event) {
             var extent = event.extent;
             loggingMessage('Extent created (N: ' + extent.north.toFixed(3) + ', E: ' + extent.east.toFixed(3) + ', S: ' + extent.south.toFixed(3) + ', W: ' + extent.west.toFixed(3) + ')');
-            var extentPrimitive = new Cesium.ExtentPrimitive({
+            var extentPrimitive = new DrawHelper.ExtentPrimitive({
                 extent: extent,
                 material: Cesium.Material.fromType(Cesium.Material.StripeType)
             });
